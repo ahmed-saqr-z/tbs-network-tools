@@ -77,9 +77,34 @@ fi
 
 # Check for MTR (optional)
 run_mtr=true
+use_sudo=false
 if ! command -v mtr &> /dev/null; then
     run_mtr=false
     mtr_message="MTR not installed (install with: brew install mtr)"
+else
+    # MTR is installed, ask about sudo
+    echo -e "\n${YELLOW}═══════════════════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}  MTR requires sudo for optimal performance${NC}"
+    echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
+    echo -e "\n${CYAN}MTR (My Traceroute) needs administrator privileges to run.${NC}"
+    echo -e "${CYAN}You will be prompted for your password.${NC}\n"
+    read -p "Run MTR with sudo? (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Prompt for sudo password upfront
+        if sudo -v; then
+            use_sudo=true
+            echo -e "${GREEN}✓ Sudo access granted${NC}\n"
+        else
+            echo -e "${RED}✗ Sudo access denied - MTR will be skipped${NC}\n"
+            run_mtr=false
+            mtr_message="Sudo access required"
+        fi
+    else
+        echo -e "${YELLOW}MTR will be skipped${NC}\n"
+        run_mtr=false
+        mtr_message="User declined sudo"
+    fi
 fi
 
 echo -e "\n${YELLOW}Starting tests...${NC}\n"
@@ -102,8 +127,12 @@ ping_pid=$!
 trace_pid=$!
 
 if [ "$run_mtr" = true ]; then
-    # MTR without sudo: 50 cycles, 0.5 second interval (faster)
-    (mtr -r -c 50 -i 0.5 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+    # MTR with sudo: 50 cycles, 0.5 second interval for faster results
+    if [ "$use_sudo" = true ]; then
+        (sudo mtr -r -c 50 -i 0.5 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+    else
+        (mtr -r -c 50 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+    fi
     mtr_pid=$!
 fi
 
@@ -267,4 +296,10 @@ else
     echo -e "    ${GRAY}- $mtr_file (skipped - MTR not available)${NC}"
 fi
 echo -e "\n  Total Duration: $total_display"
+echo -e "\n${YELLOW}═══════════════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}  Next Steps${NC}"
+echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
+echo -e "\n  Please share the results with ZIWO Support Team by"
+echo -e "  replying to the same ticket with the files attached or"
+echo -e "  send the files to support@ziwo.io"
 echo -e "\n${GREEN}═══════════════════════════════════════════════════════${NC}\n"

@@ -260,4 +260,10 @@ Write-Host "    - $pingFile" -ForegroundColor Cyan
 Write-Host "    - $tracertFile" -ForegroundColor Cyan
 Write-Host "    - $pathpingFile" -ForegroundColor Cyan
 Write-Host "`n  Total Duration: $totalDisplay" -ForegroundColor White
+Write-Host "`n═══════════════════════════════════════════════════════" -ForegroundColor Yellow
+Write-Host "  Next Steps" -ForegroundColor Yellow
+Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Yellow
+Write-Host "`n  Please share the results with ZIWO Support Team by" -ForegroundColor White
+Write-Host "  replying to the same ticket with the files attached or" -ForegroundColor White
+Write-Host "  send the files to support@ziwo.io" -ForegroundColor White
 Write-Host "`n═══════════════════════════════════════════════════════`n" -ForegroundColor Green
