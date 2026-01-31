@@ -79,8 +79,8 @@ $tracertJob = Start-Job -ScriptBlock {
 $pathpingJob = Start-Job -ScriptBlock {
     param($domain)
     try {
-        # Pathping with 25 queries per hop (industry standard, reliable results)
-        pathping -q 25 $domain
+        # Pathping with 50 queries per hop for comprehensive statistics
+        pathping -q 50 $domain
     } catch {
         "Error running pathping: $_"
     }

@@ -127,11 +127,13 @@ ping_pid=$!
 trace_pid=$!
 
 if [ "$run_mtr" = true ]; then
-    # MTR with sudo: 50 cycles, 0.5 second interval for faster results
+    # MTR for 5 minutes to match ping duration
+    # With sudo: 600 cycles at 0.5s interval = 5 minutes
+    # Without sudo: 300 cycles at 1s default interval = 5 minutes
     if [ "$use_sudo" = true ]; then
-        (sudo mtr -r -c 50 -i 0.5 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+        (sudo mtr -r -c 600 -i 0.5 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
     else
-        (mtr -r -c 50 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+        (mtr -r -c 300 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
     fi
     mtr_pid=$!
 fi
