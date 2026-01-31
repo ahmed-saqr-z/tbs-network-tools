@@ -386,20 +386,17 @@
                         Open <strong>Terminal</strong> (Applications → Utilities → Terminal)
                     </li>
                     <li data-step="2">
-                        Install PowerShell if not already installed: <code>brew install powershell</code>
-                    </li>
-                    <li data-step="3">
                         Click the <strong>"Copy Command"</strong> button below
                     </li>
-                    <li data-step="4">
+                    <li data-step="3">
                         <strong>Paste</strong> into Terminal and press <strong>Enter</strong>
                     </li>
-                    <li data-step="5">
+                    <li data-step="4">
                         Enter your <strong>instance name</strong> when prompted
                     </li>
                 </ul>
 
-                <div class="command-box">pwsh -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"</div>
+                <div class="command-box">bash <(curl -s https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.sh)</div>
 
                 <button class="copy-button" onclick="copyCommand('macos')">
                     <span>📋</span>
@@ -414,10 +411,13 @@
                         <li style="color: #2c5282;"><strong>[instance] mtr [timestamp].txt</strong> - Comprehensive analysis (if MTR installed)</li>
                     </ul>
                     <p style="margin-top: 15px; color: #2c5282; font-size: 0.9em;">
-                        ℹ️ <strong>Note:</strong> MTR is optional. Install with: <code>brew install mtr</code>
+                        ℹ️ <strong>Note:</strong> MTR is optional. Install with: <code>brew install mtr</code> (requires sudo)
                     </p>
                     <p style="margin-top: 10px; color: #2c5282; font-size: 0.9em;">
                         ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
+                    </p>
+                    <p style="margin-top: 10px; color: #2c5282; font-size: 0.9em;">
+                        ✅ <strong>No installation required!</strong> Uses native macOS tools
                     </p>
                 </div>
             </div>
@@ -432,7 +432,7 @@
     <script>
         const commands = {
             windows: 'powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"',
-            macos: 'pwsh -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"'
+            macos: 'bash <(curl -s https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.sh)'
         };
 
         function switchOS(os) {
