@@ -31,14 +31,20 @@
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 30px;
             margin-bottom: 40px;
         }
 
         .logo {
-            max-width: 200px;
+            max-width: 150px;
             height: auto;
-            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            flex: 1;
         }
 
         .header h1 {
@@ -232,6 +238,15 @@
                 padding: 20px;
             }
 
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                max-width: 120px;
+            }
+
             .header h1 {
                 font-size: 1.8em;
             }
@@ -245,10 +260,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="english-dark-logo.png" alt="TBS Logo" class="logo">
-            <span class="badge">v1.0.0</span>
-            <h1>🔧 Network Diagnostics Tool</h1>
-            <p>Automated network troubleshooting made simple</p>
+            <img src="9e1f2272-985a-462a-b041-e6582305d159_medium-removebg-preview.png" alt="TBS Logo" class="logo">
+            <div class="header-content">
+                <span class="badge">v1.0.0</span>
+                <h1>🔧 Network Diagnostics Tool</h1>
+                <p>Automated network troubleshooting made simple</p>
+            </div>
         </div>
 
         <div class="features">
