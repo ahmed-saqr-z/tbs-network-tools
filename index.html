@@ -369,12 +369,15 @@
                 <div class="output-info">
                     <h3>📦 What You'll Get</h3>
                     <ul>
-                        <li><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test</li>
-                        <li><strong>[instance] tracert [timestamp].txt</strong> - Network path trace</li>
-                        <li><strong>[instance] pathping [timestamp].txt</strong> - Comprehensive analysis</li>
+                        <li><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test (300 packets)</li>
+                        <li><strong>[instance] tracert [timestamp].txt</strong> - Network path trace (30 hops max)</li>
+                        <li><strong>[instance] pathping [timestamp].txt</strong> - Comprehensive analysis (25 queries/hop)</li>
                     </ul>
                     <p style="margin-top: 15px; color: #744210; font-size: 0.9em;">
-                        ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
+                        ⏱️ <strong>Total time:</strong> ~10-15 minutes (files save as each test completes)
+                    </p>
+                    <p style="margin-top: 10px; color: #744210; font-size: 0.9em;">
+                        💾 <strong>Fault-tolerant:</strong> Results saved immediately - safe to cancel anytime
                     </p>
                 </div>
             </div>
@@ -392,6 +395,9 @@
                         <strong>Paste</strong> into Terminal and press <strong>Enter</strong>
                     </li>
                     <li data-step="4">
+                        If MTR is installed, you'll be asked for sudo (optional)
+                    </li>
+                    <li data-step="5">
                         Enter your <strong>instance name</strong> when prompted
                     </li>
                 </ul>
@@ -406,15 +412,15 @@
                 <div class="output-info" style="background: #e6f3ff; border-left-color: #3182ce;">
                     <h3 style="color: #2c5282;">📦 What You'll Get</h3>
                     <ul>
-                        <li style="color: #2c5282;"><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test</li>
+                        <li style="color: #2c5282;"><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test (300 packets)</li>
                         <li style="color: #2c5282;"><strong>[instance] traceroute [timestamp].txt</strong> - Network path trace</li>
-                        <li style="color: #2c5282;"><strong>[instance] mtr [timestamp].txt</strong> - Comprehensive analysis (if MTR installed)</li>
+                        <li style="color: #2c5282;"><strong>[instance] mtr [timestamp].txt</strong> - Comprehensive analysis (if MTR with sudo)</li>
                     </ul>
                     <p style="margin-top: 15px; color: #2c5282; font-size: 0.9em;">
-                        ℹ️ <strong>Note:</strong> MTR is optional. Install with: <code>brew install mtr</code> (requires sudo)
+                        ℹ️ <strong>MTR (optional):</strong> You'll be prompted for sudo at the start for best performance. Install with: <code>brew install mtr</code>
                     </p>
                     <p style="margin-top: 10px; color: #2c5282; font-size: 0.9em;">
-                        ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
+                        ⏱️ <strong>Total time:</strong> ~5-6 minutes (files save as each test completes)
                     </p>
                     <p style="margin-top: 10px; color: #2c5282; font-size: 0.9em;">
                         ✅ <strong>No installation required!</strong> Uses native macOS tools
