@@ -6,7 +6,7 @@ Write-Host "`n══════════════════════
 Write-Host "  Network Diagnostics Tool" -ForegroundColor Cyan
 Write-Host "═══════════════════════════════════════════════════════`n" -ForegroundColor Cyan
 
-$instanceName = Read-Host "Enter instance name (e.g., adq)"
+$instanceName = Read-Host "Enter instance name"
 
 # Validate input
 if ([string]::IsNullOrWhiteSpace($instanceName)) {
