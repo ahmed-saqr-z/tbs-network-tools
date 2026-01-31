@@ -114,6 +114,44 @@
             font-size: 1.5em;
         }
 
+        .os-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .os-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .os-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .os-tab.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .os-content {
+            display: none;
+        }
+
+        .os-content.active {
+            display: block;
+        }
+
         .steps {
             list-style: none;
             margin-bottom: 20px;
@@ -294,38 +332,94 @@
         <div class="command-section">
             <h2>Quick Start Guide</h2>
 
-            <ul class="steps">
-                <li data-step="1">
-                    Right-click the Windows <strong>Start</strong> button and select <strong>"Windows PowerShell (Admin)"</strong>
-                </li>
-                <li data-step="2">
-                    Click the <strong>"Copy Command"</strong> button below
-                </li>
-                <li data-step="3">
-                    <strong>Paste</strong> into PowerShell and press <strong>Enter</strong>
-                </li>
-                <li data-step="4">
-                    Enter your <strong>instance name</strong> when prompted
-                </li>
-            </ul>
+            <!-- OS Tabs -->
+            <div class="os-tabs">
+                <div class="os-tab active" onclick="switchOS('windows')">
+                    🪟 Windows
+                </div>
+                <div class="os-tab" onclick="switchOS('macos')">
+                    🍎 macOS
+                </div>
+            </div>
 
-            <div class="command-box" id="command">powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"</div>
-
-            <button class="copy-button" id="copyBtn">
-                <span id="copyIcon">📋</span>
-                <span id="copyText">Copy Command</span>
-            </button>
-
-            <div class="output-info">
-                <h3>📦 What You'll Get</h3>
-                <ul>
-                    <li><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test results</li>
-                    <li><strong>[instance] tracert [timestamp].txt</strong> - Network path trace</li>
-                    <li><strong>[instance] pathping [timestamp].txt</strong> - Comprehensive analysis</li>
+            <!-- Windows Content -->
+            <div id="windows-content" class="os-content active">
+                <ul class="steps">
+                    <li data-step="1">
+                        Right-click the Windows <strong>Start</strong> button and select <strong>"Windows PowerShell (Admin)"</strong>
+                    </li>
+                    <li data-step="2">
+                        Click the <strong>"Copy Command"</strong> button below
+                    </li>
+                    <li data-step="3">
+                        <strong>Paste</strong> into PowerShell and press <strong>Enter</strong>
+                    </li>
+                    <li data-step="4">
+                        Enter your <strong>instance name</strong> when prompted
+                    </li>
                 </ul>
-                <p style="margin-top: 15px; color: #744210; font-size: 0.9em;">
-                    ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
-                </p>
+
+                <div class="command-box">powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"</div>
+
+                <button class="copy-button" onclick="copyCommand('windows')">
+                    <span>📋</span>
+                    <span>Copy Command</span>
+                </button>
+
+                <div class="output-info">
+                    <h3>📦 What You'll Get</h3>
+                    <ul>
+                        <li><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test</li>
+                        <li><strong>[instance] tracert [timestamp].txt</strong> - Network path trace</li>
+                        <li><strong>[instance] pathping [timestamp].txt</strong> - Comprehensive analysis</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #744210; font-size: 0.9em;">
+                        ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
+                    </p>
+                </div>
+            </div>
+
+            <!-- macOS Content -->
+            <div id="macos-content" class="os-content">
+                <ul class="steps">
+                    <li data-step="1">
+                        Open <strong>Terminal</strong> (Applications → Utilities → Terminal)
+                    </li>
+                    <li data-step="2">
+                        Install PowerShell if not already installed: <code>brew install powershell</code>
+                    </li>
+                    <li data-step="3">
+                        Click the <strong>"Copy Command"</strong> button below
+                    </li>
+                    <li data-step="4">
+                        <strong>Paste</strong> into Terminal and press <strong>Enter</strong>
+                    </li>
+                    <li data-step="5">
+                        Enter your <strong>instance name</strong> when prompted
+                    </li>
+                </ul>
+
+                <div class="command-box">pwsh -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"</div>
+
+                <button class="copy-button" onclick="copyCommand('macos')">
+                    <span>📋</span>
+                    <span>Copy Command</span>
+                </button>
+
+                <div class="output-info" style="background: #e6f3ff; border-left-color: #3182ce;">
+                    <h3 style="color: #2c5282;">📦 What You'll Get</h3>
+                    <ul>
+                        <li style="color: #2c5282;"><strong>[instance] ping [timestamp].txt</strong> - 5-minute ping test</li>
+                        <li style="color: #2c5282;"><strong>[instance] traceroute [timestamp].txt</strong> - Network path trace</li>
+                        <li style="color: #2c5282;"><strong>[instance] mtr [timestamp].txt</strong> - Comprehensive analysis (if MTR installed)</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #2c5282; font-size: 0.9em;">
+                        ℹ️ <strong>Note:</strong> MTR is optional. Install with: <code>brew install mtr</code>
+                    </p>
+                    <p style="margin-top: 10px; color: #2c5282; font-size: 0.9em;">
+                        ⏱️ <strong>Total time:</strong> Approximately 10-15 minutes
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -336,25 +430,40 @@
     </div>
 
     <script>
-        const copyBtn = document.getElementById('copyBtn');
-        const copyIcon = document.getElementById('copyIcon');
-        const copyText = document.getElementById('copyText');
-        const command = document.getElementById('command').textContent;
+        const commands = {
+            windows: 'powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"',
+            macos: 'pwsh -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"'
+        };
 
-        copyBtn.addEventListener('click', async () => {
+        function switchOS(os) {
+            // Update tab styles
+            document.querySelectorAll('.os-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update content visibility
+            document.querySelectorAll('.os-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(os + '-content').classList.add('active');
+        }
+
+        async function copyCommand(os) {
+            const command = commands[os];
+            const button = event.target.closest('.copy-button');
+
             try {
                 await navigator.clipboard.writeText(command);
 
                 // Update button to show success
-                copyBtn.classList.add('copied');
-                copyIcon.textContent = '✓';
-                copyText.textContent = 'Copied!';
+                button.classList.add('copied');
+                button.innerHTML = '<span>✓</span><span>Copied!</span>';
 
                 // Reset after 2 seconds
                 setTimeout(() => {
-                    copyBtn.classList.remove('copied');
-                    copyIcon.textContent = '📋';
-                    copyText.textContent = 'Copy Command';
+                    button.classList.remove('copied');
+                    button.innerHTML = '<span>📋</span><span>Copy Command</span>';
                 }, 2000);
             } catch (err) {
                 // Fallback for older browsers
@@ -365,13 +474,18 @@
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
 
-                copyIcon.textContent = '✓';
-                copyText.textContent = 'Copied!';
-
+                button.innerHTML = '<span>✓</span><span>Copied!</span>';
                 setTimeout(() => {
-                    copyIcon.textContent = '📋';
-                    copyText.textContent = 'Copy Command';
+                    button.innerHTML = '<span>📋</span><span>Copy Command</span>';
                 }, 2000);
+            }
+        }
+
+        // Auto-detect OS and switch tab on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            if (isMac) {
+                document.querySelectorAll('.os-tab')[1].click();
             }
         });
     </script>
