@@ -97,11 +97,13 @@ mtr_pid_file=$(mktemp)
 (ping -c 300 "$domain" > "$ping_tmp" 2>&1; echo $? > "$ping_pid_file") &
 ping_pid=$!
 
-(traceroute "$domain" > "$trace_tmp" 2>&1; echo $? > "$trace_pid_file") &
+# Traceroute with max 30 hops and 2 second timeout per hop
+(traceroute -m 30 -w 2 "$domain" > "$trace_tmp" 2>&1; echo $? > "$trace_pid_file") &
 trace_pid=$!
 
 if [ "$run_mtr" = true ]; then
-    (sudo mtr -r -c 100 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
+    # MTR without sudo: 50 cycles, 0.5 second interval (faster)
+    (mtr -r -c 50 -i 0.5 "$domain" > "$mtr_tmp" 2>&1; echo $? > "$mtr_pid_file") &
     mtr_pid=$!
 fi
 
@@ -113,6 +115,9 @@ ping_duration=300
 ping_completed=false
 trace_completed=false
 mtr_completed=false
+ping_saved=false
+trace_saved=false
+mtr_saved=false
 [ "$run_mtr" = false ] && mtr_completed=true
 
 while [ "$ping_completed" = false ] || [ "$trace_completed" = false ] || [ "$mtr_completed" = false ]; do
@@ -140,6 +145,17 @@ while [ "$ping_completed" = false ] || [ "$trace_completed" = false ] || [ "$mtr
             ping_duration_actual=$((ping_end_time - start_time))
             ping_duration_min=$((ping_duration_actual / 60))
             ping_duration_sec=$((ping_duration_actual % 60))
+        fi
+        # Save ping output immediately if not already saved
+        if [ "$ping_saved" = false ]; then
+            ping_exit_code=$(cat "$ping_pid_file" 2>/dev/null || echo "1")
+            if [ "$ping_exit_code" -eq 0 ]; then
+                cat "$ping_tmp" > "$ping_file"
+            else
+                echo "Ping test failed. The domain may not be reachable." > "$ping_file"
+                cat "$ping_tmp" >> "$ping_file"
+            fi
+            ping_saved=true
         fi
         ping_duration_display=$(printf "%02d:%02d" $ping_duration_min $ping_duration_sec)
         echo -e "  Ping:       ${GREEN}[Completed]${NC} ($ping_duration_display)"
@@ -171,6 +187,17 @@ while [ "$ping_completed" = false ] || [ "$trace_completed" = false ] || [ "$mtr
             trace_duration_min=$((trace_duration / 60))
             trace_duration_sec=$((trace_duration % 60))
         fi
+        # Save traceroute output immediately if not already saved
+        if [ "$trace_saved" = false ]; then
+            trace_exit_code=$(cat "$trace_pid_file" 2>/dev/null || echo "1")
+            if [ "$trace_exit_code" -eq 0 ]; then
+                cat "$trace_tmp" > "$trace_file"
+            else
+                echo "Traceroute test failed. The domain may not be reachable." > "$trace_file"
+                cat "$trace_tmp" >> "$trace_file"
+            fi
+            trace_saved=true
+        fi
         trace_duration_display=$(printf "%02d:%02d" $trace_duration_min $trace_duration_sec)
         echo -e "  Traceroute: ${GREEN}[Completed]${NC} ($trace_duration_display)"
     else
@@ -187,6 +214,17 @@ while [ "$ping_completed" = false ] || [ "$trace_completed" = false ] || [ "$mtr
             mtr_duration=$((mtr_end_time - start_time))
             mtr_duration_min=$((mtr_duration / 60))
             mtr_duration_sec=$((mtr_duration % 60))
+        fi
+        # Save MTR output immediately if not already saved
+        if [ "$mtr_saved" = false ]; then
+            mtr_exit_code=$(cat "$mtr_pid_file" 2>/dev/null || echo "1")
+            if [ "$mtr_exit_code" -eq 0 ]; then
+                cat "$mtr_tmp" > "$mtr_file"
+            else
+                echo "MTR test failed. You may need to run with sudo." > "$mtr_file"
+                cat "$mtr_tmp" >> "$mtr_file"
+            fi
+            mtr_saved=true
         fi
         mtr_duration_display=$(printf "%02d:%02d" $mtr_duration_min $mtr_duration_sec)
         echo -e "  MTR:        ${GREEN}[Completed]${NC} ($mtr_duration_display)"
@@ -206,40 +244,6 @@ done
 wait $ping_pid 2>/dev/null
 wait $trace_pid 2>/dev/null
 [ "$run_mtr" = true ] && wait $mtr_pid 2>/dev/null
-
-# Collect results
-echo -e "\n\n${YELLOW}Collecting results...${NC}"
-
-# Check for errors and save outputs
-ping_exit_code=$(cat "$ping_pid_file" 2>/dev/null || echo "1")
-trace_exit_code=$(cat "$trace_pid_file" 2>/dev/null || echo "1")
-[ "$run_mtr" = true ] && mtr_exit_code=$(cat "$mtr_pid_file" 2>/dev/null || echo "1")
-
-# Save ping output
-if [ "$ping_exit_code" -eq 0 ]; then
-    cat "$ping_tmp" > "$ping_file"
-else
-    echo "Ping test failed. The domain may not be reachable." > "$ping_file"
-    cat "$ping_tmp" >> "$ping_file"
-fi
-
-# Save traceroute output
-if [ "$trace_exit_code" -eq 0 ]; then
-    cat "$trace_tmp" > "$trace_file"
-else
-    echo "Traceroute test failed. The domain may not be reachable." > "$trace_file"
-    cat "$trace_tmp" >> "$trace_file"
-fi
-
-# Save MTR output
-if [ "$run_mtr" = true ]; then
-    if [ "$mtr_exit_code" -eq 0 ]; then
-        cat "$mtr_tmp" > "$mtr_file"
-    else
-        echo "MTR test failed. You may need to run with sudo." > "$mtr_file"
-        cat "$mtr_tmp" >> "$mtr_file"
-    fi
-fi
 
 # Clean up temporary files
 rm -f "$ping_tmp" "$trace_tmp" "$mtr_tmp" "$ping_pid_file" "$trace_pid_file" "$mtr_pid_file"

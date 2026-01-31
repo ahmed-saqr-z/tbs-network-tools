@@ -69,7 +69,8 @@ $pingJob = Start-Job -ScriptBlock {
 $tracertJob = Start-Job -ScriptBlock {
     param($domain)
     try {
-        tracert $domain
+        # Tracert with max 30 hops and 2 second timeout
+        tracert -h 30 -w 2000 $domain
     } catch {
         "Error running tracert: $_"
     }
@@ -78,7 +79,8 @@ $tracertJob = Start-Job -ScriptBlock {
 $pathpingJob = Start-Job -ScriptBlock {
     param($domain)
     try {
-        pathping $domain
+        # Pathping with 25 queries per hop (industry standard, reliable results)
+        pathping -q 25 $domain
     } catch {
         "Error running pathping: $_"
     }
@@ -92,6 +94,9 @@ $pingDuration = 300 # 5 minutes in seconds
 $pingCompleted = $false
 $tracertCompleted = $false
 $pathpingCompleted = $false
+$pingSaved = $false
+$tracertSaved = $false
+$pathpingSaved = $false
 
 while (-not ($pingCompleted -and $tracertCompleted -and $pathpingCompleted)) {
     # Clear screen for updated display
@@ -114,6 +119,21 @@ while (-not ($pingCompleted -and $tracertCompleted -and $pathpingCompleted)) {
             $pingCompleted = $true
             $pingEndTime = Get-Date
             $pingDurationActual = ($pingEndTime - $startTime).TotalSeconds
+        }
+        # Save ping output immediately if not already saved
+        if (-not $pingSaved) {
+            try {
+                $pingOutput = Receive-Job -Job $pingJob -ErrorAction Stop
+                if ([string]::IsNullOrWhiteSpace($pingOutput)) {
+                    $pingOutput = "Ping test completed but returned no output. The domain may not be reachable."
+                }
+                $pingOutput | Out-File -FilePath $pingFile -Encoding UTF8
+                $pingSaved = $true
+            } catch {
+                $pingOutput = "Ping test failed: $_"
+                $pingOutput | Out-File -FilePath $pingFile -Encoding UTF8
+                $pingSaved = $true
+            }
         }
         $pingDurationDisplay = "{0:D2}:{1:D2}" -f [int]($pingDurationActual / 60), ([int]$pingDurationActual % 60)
         if ($pingJob.State -eq "Failed") {
@@ -146,6 +166,21 @@ while (-not ($pingCompleted -and $tracertCompleted -and $pathpingCompleted)) {
             $tracertEndTime = Get-Date
             $tracertDuration = ($tracertEndTime - $startTime).TotalSeconds
         }
+        # Save tracert output immediately if not already saved
+        if (-not $tracertSaved) {
+            try {
+                $tracertOutput = Receive-Job -Job $tracertJob -ErrorAction Stop
+                if ([string]::IsNullOrWhiteSpace($tracertOutput)) {
+                    $tracertOutput = "Tracert test completed but returned no output. The domain may not be reachable."
+                }
+                $tracertOutput | Out-File -FilePath $tracertFile -Encoding UTF8
+                $tracertSaved = $true
+            } catch {
+                $tracertOutput = "Tracert test failed: $_"
+                $tracertOutput | Out-File -FilePath $tracertFile -Encoding UTF8
+                $tracertSaved = $true
+            }
+        }
         $tracertDurationDisplay = "{0:D2}:{1:D2}" -f [int]($tracertDuration / 60), ([int]$tracertDuration % 60)
         if ($tracertJob.State -eq "Failed") {
             Write-Host "  Tracert:   " -NoNewline
@@ -167,6 +202,21 @@ while (-not ($pingCompleted -and $tracertCompleted -and $pathpingCompleted)) {
             $pathpingCompleted = $true
             $pathpingEndTime = Get-Date
             $pathpingDuration = ($pathpingEndTime - $startTime).TotalSeconds
+        }
+        # Save pathping output immediately if not already saved
+        if (-not $pathpingSaved) {
+            try {
+                $pathpingOutput = Receive-Job -Job $pathpingJob -ErrorAction Stop
+                if ([string]::IsNullOrWhiteSpace($pathpingOutput)) {
+                    $pathpingOutput = "Pathping test completed but returned no output. The domain may not be reachable."
+                }
+                $pathpingOutput | Out-File -FilePath $pathpingFile -Encoding UTF8
+                $pathpingSaved = $true
+            } catch {
+                $pathpingOutput = "Pathping test failed: $_"
+                $pathpingOutput | Out-File -FilePath $pathpingFile -Encoding UTF8
+                $pathpingSaved = $true
+            }
         }
         $pathpingDurationDisplay = "{0:D2}:{1:D2}" -f [int]($pathpingDuration / 60), ([int]($pathpingDuration % 60))
         if ($pathpingJob.State -eq "Failed") {
@@ -193,43 +243,7 @@ while (-not ($pingCompleted -and $tracertCompleted -and $pathpingCompleted)) {
     Start-Sleep -Seconds 1
 }
 
-# All jobs completed - collect results
-Write-Host "`n`nCollecting results..." -ForegroundColor Yellow
-
-# Get job outputs with error handling
-try {
-    $pingOutput = Receive-Job -Job $pingJob -ErrorAction Stop
-    if ([string]::IsNullOrWhiteSpace($pingOutput)) {
-        $pingOutput = "Ping test completed but returned no output. The domain may not be reachable."
-    }
-} catch {
-    $pingOutput = "Ping test failed: $_"
-}
-
-try {
-    $tracertOutput = Receive-Job -Job $tracertJob -ErrorAction Stop
-    if ([string]::IsNullOrWhiteSpace($tracertOutput)) {
-        $tracertOutput = "Tracert test completed but returned no output. The domain may not be reachable."
-    }
-} catch {
-    $tracertOutput = "Tracert test failed: $_"
-}
-
-try {
-    $pathpingOutput = Receive-Job -Job $pathpingJob -ErrorAction Stop
-    if ([string]::IsNullOrWhiteSpace($pathpingOutput)) {
-        $pathpingOutput = "Pathping test completed but returned no output. The domain may not be reachable."
-    }
-} catch {
-    $pathpingOutput = "Pathping test failed: $_"
-}
-
-# Save outputs to files
-$pingOutput | Out-File -FilePath $pingFile -Encoding UTF8
-$tracertOutput | Out-File -FilePath $tracertFile -Encoding UTF8
-$pathpingOutput | Out-File -FilePath $pathpingFile -Encoding UTF8
-
-# Clean up jobs
+# All jobs completed - clean up jobs
 Remove-Job -Job $pingJob -Force
 Remove-Job -Job $tracertJob -Force
 Remove-Job -Job $pathpingJob -Force
