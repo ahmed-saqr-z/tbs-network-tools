@@ -34,16 +34,14 @@ All tests run in parallel with a live progress dashboard, and results are saved 
 Open PowerShell and run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/Network-Diagnostics.ps1)"
+powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"
 ```
-
-> **Note:** Replace `YOUR_USERNAME/YOUR_REPO` with your actual GitHub repository path.
 
 ### Alternative: Download and Run
 
 ```powershell
 # Download the script
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/Network-Diagnostics.ps1" -OutFile "Network-Diagnostics.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1" -OutFile "Network-Diagnostics.ps1"
 
 # Run it
 powershell -ExecutionPolicy Bypass -File ".\Network-Diagnostics.ps1"

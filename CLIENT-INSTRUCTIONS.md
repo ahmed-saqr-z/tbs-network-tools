@@ -16,7 +16,7 @@
 Copy and paste this command into PowerShell, then press **Enter**:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/Network-Diagnostics.ps1)"
+powershell -ExecutionPolicy Bypass -Command "iex (irm https://raw.githubusercontent.com/ahmed-saqr-z/tbs-network-tools/main/Network-Diagnostics.ps1)"
 ```
 
 > **Note:** The command is one long line - make sure to copy it completely.
@@ -115,7 +115,7 @@ powershell -ExecutionPolicy Bypass -Command "iex (Invoke-RestMethod YOUR_URL)"
 - The URL is copied correctly (no extra spaces)
 
 **Alternative:** Download manually:
-1. Go to: `https://github.com/YOUR_USERNAME/YOUR_REPO`
+1. Go to: `https://github.com/ahmed-saqr-z/tbs-network-tools`
 2. Click on `Network-Diagnostics.ps1`
 3. Click **"Raw"** button
 4. Right-click → **"Save as..."** → Save to Desktop
